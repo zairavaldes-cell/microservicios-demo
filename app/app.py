@@ -1,4 +1,5 @@
 import os
+import socket
 from flask import Flask
 import redis
 
@@ -11,8 +12,8 @@ cache = redis.Redis(host=redis_host, port=6379)
 def hello():
     try:
         count = cache.incr('hits')
-        hostname = os.uname()[1]
-        return f'¡Hola! Esta página ha sido visitada {count} veces. Atendido por el contenedor: {hostname}\n'
+        hostname = socket.gethostname()
+        return f'Â¡Hola! Esta pÃ¡gina ha sido visitada {count} veces. Atendido por el contenedor: {hostname}\n'
     except Exception as e:
         return f'Error al conectar con Redis: {str(e)}', 500
 
