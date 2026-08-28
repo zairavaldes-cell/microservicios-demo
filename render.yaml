@@ -1,0 +1,23 @@
+services:
+  # Base de Datos Redis
+  - type: redis
+    name: redis
+    ipAllowList: [] # Solo accesible internamente por los servicios
+
+  # Microservicio Flask (Python)
+  - type: web
+    name: web
+    env: docker
+    dockerfilePath: ./app/Dockerfile
+    envVars:
+      - key: REDIS_HOST
+        fromService:
+          type: redis
+          name: redis
+          property: host
+
+  # Proxy Inverso Nginx
+  - type: web
+    name: proxy
+    env: docker
+    dockerfilePath: ./Dockerfile.proxy
