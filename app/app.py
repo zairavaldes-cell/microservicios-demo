@@ -1,21 +1,17 @@
 import os
-import socket
 from flask import Flask
 import redis
 
 app = Flask(__name__)
-
-# Conexión a Redis usando el nombre del servicio definido en docker-compose
-redis_host = os.getenv('REDIS_HOST', 'redis')
-r = redis.Redis(host=redis_host, port=6379, db=0, decode_responses=True)
+redis_host = os.environ.get('REDIS_HOST', 'localhost')
+cache = redis.Redis(host=redis_host, port=6379)
 
 @app.route('/')
 def hello():
-    # Incrementa el contador en Redis
-    visits = r.incr('counter')
-    # Obtiene el ID del contenedor actual para demostrar balanceo de carga
-    hostname = socket.gethostname()
-    return f"<h1>¡Hola desde el microservicio!</h1><p>Esta página ha sido visitada <b>{visits}</b> veces.</p><p>Atendido por el contenedor: <code>{hostname}</code></p>"
+    count = cache.incr('hits')
+    hostname = os.uname()[1]
+    return f'¡Hola! Esta página ha sido visitada {count} veces. Atendido por el contenedor: {hostname}\n'
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+if __name__ == "__main__":
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
