@@ -8,6 +8,7 @@ services:
     env: docker
     plan: free
     dockerfilePath: ./app/Dockerfile
+    dockerContext: ./app
     envVars:
       - key: REDIS_HOST
         fromService:
@@ -22,3 +23,4 @@ services:
     env: docker
     plan: free
     dockerfilePath: ./Dockerfile.proxy
+    dockerContext: .
