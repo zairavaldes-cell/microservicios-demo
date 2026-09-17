@@ -30,8 +30,8 @@
                     Error de conexión con Redis
                 </div>
                 
-                <button onclick="fetchData()" class="btn btn-primary btn-lg mt-3">
-                    Actualizar ahora
+                <button onclick="location.reload()" class="btn btn-primary btn-lg mt-3">
+                    Refrescar página
                 </button>
             </div>
         </div>
@@ -41,7 +41,7 @@
     <script>
         async function fetchData() {
             try {
-                // Hacemos una petición a una nueva ruta que crearemos en Python
+                // Hacemos una petición a la API para incrementar el contador
                 const response = await fetch('/api/data');
                 const data = await response.json();
 
@@ -65,11 +65,8 @@
             }
         }
 
-        // Ejecutar al cargar la página
+        // Ejecutar al cargar la página (esto incrementa el contador 1 vez por visita)
         fetchData();
-
-        // Actualizar automáticamente cada 3 segundos
-        setInterval(fetchData, 3000);
     </script>
 </body>
 </html>
