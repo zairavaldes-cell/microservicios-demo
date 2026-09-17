@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microservicios Demo</title>
+    <!-- Bootstrap CSS para diseño rápido -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Nuestro CSS personalizado -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <div class="container d-flex justify-content-center align-items-center vh-100">
+        <div class="card text-center shadow-lg p-5 card-custom">
+            <div class="card-body">
+                <h1 class="card-title mb-4">🚀 Microservicios Demo</h1>
+                
+                <div class="counter-box mb-4">
+                    <h2 class="display-1 fw-bold text-primary" id="counter">0</h2>
+                    <p class="text-muted">Visitas totales</p>
+                </div>
+
+                <div class="alert alert-info" role="alert">
+                    <strong>Atendido por el contenedor:</strong> <br>
+                    <span id="hostname" class="badge bg-secondary fs-6 mt-2">Cargando...</span>
+                </div>
+
+                <div id="error-message" class="alert alert-danger d-none" role="alert">
+                    Error de conexión con Redis
+                </div>
+                
+                <button onclick="fetchData()" class="btn btn-primary btn-lg mt-3">
+                    Actualizar ahora
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript para hacerlo dinámico -->
+    <script>
+        async function fetchData() {
+            try {
+                // Hacemos una petición a una nueva ruta que crearemos en Python
+                const response = await fetch('/api/data');
+                const data = await response.json();
+
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                // Actualizamos el DOM
+                document.getElementById('counter').innerText = data.count;
+                document.getElementById('hostname').innerText = data.hostname;
+                document.getElementById('error-message').classList.add('d-none');
+                
+                // Efecto visual de actualización
+                const counterEl = document.getElementById('counter');
+                counterEl.style.transform = 'scale(1.1)';
+                setTimeout(() => counterEl.style.transform = 'scale(1)', 200);
+
+            } catch (error) {
+                console.error("Error:", error);
+                document.getElementById('error-message').classList.remove('d-none');
+            }
+        }
+
+        // Ejecutar al cargar la página
+        fetchData();
+
+        // Actualizar automáticamente cada 3 segundos
+        setInterval(fetchData, 3000);
+    </script>
+</body>
+</html>
